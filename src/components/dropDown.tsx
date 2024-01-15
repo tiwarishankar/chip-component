@@ -26,6 +26,7 @@ export const DropDown = ({
               src={tag.image}
               alt="user-icon"
               className="w-[16px] h-[16px]"
+              loading="lazy"
             />
             <p className="text-[12px]">{tag.name}</p>
           </span>
