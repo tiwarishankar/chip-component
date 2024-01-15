@@ -2,10 +2,11 @@
 
 import { useOnClickOutside } from "@/hooks/useOnClickOutside";
 import { userDataInteface } from "@/types/userInterface";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { DropDown } from "./dropDown";
 
 export const ChipSelect = () => {
+  const [isLastTagHighlighted, setIsLastTagHighlighted] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [isInputFocused, setIsInputFocused] = useState(false);
   const [tags, setTags] = useState<userDataInteface[]>([]);
@@ -26,6 +27,24 @@ export const ChipSelect = () => {
 
   useOnClickOutside(clickOutSideRef, () => setIsInputFocused(false));
 
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Backspace" && isInputFocused) {
+        if (isLastTagHighlighted) {
+          setTags((prevTags) => prevTags.slice(0, -1));
+          setIsLastTagHighlighted(false);
+        } else {
+          setIsLastTagHighlighted(true);
+        }
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isInputFocused, isLastTagHighlighted]);
+
   return (
     <div
       className={`w-[80%]  mt-[10%] flex items-center gap-2 ${
@@ -37,6 +56,12 @@ export const ChipSelect = () => {
           <div
             key={index}
             className="flex items-center gap-2 bg-[#e1dfdf] px-2 py-1 rounded-full  w-[max-content] whitespace-nowrap"
+            style={{
+              border:
+                isLastTagHighlighted && index === tags.length - 1
+                  ? "2px solid red"
+                  : "",
+            }}
           >
             <span className="flex gap-2 items-center">
               <img
