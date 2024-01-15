@@ -1,16 +1,17 @@
-// components/ChipSelect.tsx
 "use client"; // This is a client component 👈🏽
 
+import { useOnClickOutside } from "@/hooks/useOnClickOutside";
 import { userDataInteface } from "@/types/userInterface";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { DropDown } from "./dropDown";
 
 export const ChipSelect = () => {
   const [inputValue, setInputValue] = useState("");
   const [isInputFocused, setIsInputFocused] = useState(false);
   const [tags, setTags] = useState<userDataInteface[]>([]);
+  const clickOutSideRef = useRef(null);
 
-  const handleChange = (event: any) => {
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value);
   };
 
@@ -22,6 +23,8 @@ export const ChipSelect = () => {
     setTags((prev) => [...prev, tag]);
     setInputValue("");
   };
+
+  useOnClickOutside(clickOutSideRef, () => setIsInputFocused(false));
 
   return (
     <div
@@ -53,19 +56,15 @@ export const ChipSelect = () => {
           </div>
         ))}
       </div>
-      <div className="relative w-[350px] mt-auto">
+      <div className="relative w-[350px] mt-auto" ref={clickOutSideRef}>
         <input
           type="text"
           value={inputValue}
           onChange={handleChange}
           className="flex-1 outline-none  w-[100%] bg-transparent"
           placeholder="Add a tag..."
-          autoFocus
           onFocus={() => {
             setIsInputFocused(true);
-          }}
-          onBlur={() => {
-            setIsInputFocused(false);
           }}
         />
         {isInputFocused && (
